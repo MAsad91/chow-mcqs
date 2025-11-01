@@ -35,7 +35,7 @@ export default function MCQQuestion({ question, currentIndex, totalQuestions, sc
       setShowFeedback(false);
       setIsCorrect(null);
     }
-  }, [question.id, initialSelectedAnswer, isAnswered]);
+  }, [question.id, question.correctAnswer, initialSelectedAnswer, isAnswered]);
 
   const handleOptionClick = (optionIndex: number) => {
     if (showFeedback && isAnswered) return; // Prevent changing answer after feedback is shown
