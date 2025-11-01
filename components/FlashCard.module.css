@@ -1,0 +1,346 @@
+.flashCard {
+  perspective: 1000px;
+  width: 100%;
+  height: 450px;
+  cursor: pointer;
+  animation: cardEntrance 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-delay: var(--animation-delay, 0s);
+  animation-fill-mode: both;
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.8) rotateX(-20deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+  }
+}
+
+.cardInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.flashCard.flipped .cardInner {
+  transform: rotateY(180deg);
+}
+
+.flashCard:not(.flipped):hover .cardInner {
+  transform: rotateY(5deg) scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+.flashCard.flipped:hover .cardInner {
+  transform: rotateY(185deg) scale(1.02);
+  transition: transform 0.3s ease;
+}
+
+.cardFront,
+.cardBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 0 0 2px rgba(255, 255, 255, 0.7),
+    inset 0 2px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  border: 4px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.cardFront::before,
+.cardBack::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  animation: shimmer 3s infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+.cardFront {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.92) 100%);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+}
+
+.cardFront::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 20, 147, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 165, 0, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+  border-radius: 28px;
+}
+
+.cardBack {
+  background: linear-gradient(135deg, rgba(255, 20, 147, 0.25) 0%, rgba(255, 165, 0, 0.25) 50%, rgba(255, 20, 147, 0.2) 100%);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  transform: rotateY(180deg);
+}
+
+.cardBack::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  border-radius: 28px;
+}
+
+.cardContent {
+  padding: 40px 35px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.cardNumber {
+  position: absolute;
+  top: 20px;
+  left: 25px;
+  font-size: 28px;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(135deg, #ff1493 0%, #ffa500 50%, #ff1493 100%);
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 
+    0 4px 15px rgba(255, 20, 147, 0.4),
+    0 0 10px rgba(255, 165, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: numberPulse 2s ease-in-out infinite;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes numberPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 
+      0 4px 15px rgba(255, 20, 147, 0.4),
+      0 0 10px rgba(255, 165, 0, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 
+      0 6px 20px rgba(255, 20, 147, 0.6),
+      0 0 15px rgba(255, 165, 0, 0.5);
+  }
+}
+
+@keyframes titleShine {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.cardLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ff1493;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 10px;
+}
+
+.cardText {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+  line-height: 1.6;
+  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  word-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.cardBack .cardText {
+  color: #1a202c;
+}
+
+.flipHint {
+  position: absolute;
+  bottom: 25px;
+  font-size: 13px;
+  color: #4a5568;
+  font-weight: 600;
+  opacity: 0.9;
+  animation: hintPulse 2s ease-in-out infinite;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 6px 14px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes hintPulse {
+  0%, 100% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.flashCard:hover .cardFront,
+.flashCard:hover .cardBack {
+  box-shadow: 
+    0 30px 80px rgba(255, 20, 147, 0.4),
+    0 0 40px rgba(255, 165, 0, 0.3),
+    0 0 0 2px rgba(255, 255, 255, 0.9),
+    inset 0 2px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.flashCard:not(.flipped):hover {
+  animation: cardPulse 1s ease-in-out infinite;
+}
+
+.flashCard.flipped:hover {
+  animation: cardPulseFlipped 1s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.03);
+  }
+}
+
+@keyframes cardPulseFlipped {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-8px) scale(1.03);
+  }
+}
+
+@media (max-width: 768px) {
+  .flashCard {
+    height: 400px;
+  }
+
+  .cardContent {
+    padding: 35px 25px;
+    gap: 18px;
+  }
+
+  .cardNumber {
+    font-size: 24px;
+    top: 18px;
+    left: 20px;
+    padding: 6px 14px;
+  }
+
+  .cardText {
+    font-size: 18px;
+    line-height: 1.5;
+    padding: 0 15px;
+  }
+
+  .cardLabel {
+    font-size: 12px;
+  }
+
+  .flipHint {
+    bottom: 20px;
+    font-size: 12px;
+    padding: 5px 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .flashCard {
+    height: 380px;
+  }
+
+  .cardContent {
+    padding: 30px 20px;
+    gap: 15px;
+  }
+
+  .cardNumber {
+    font-size: 22px;
+    top: 15px;
+    left: 15px;
+    padding: 6px 12px;
+  }
+
+  .cardText {
+    font-size: 16px;
+    line-height: 1.4;
+    padding: 0 12px;
+  }
+
+  .flipHint {
+    font-size: 11px;
+    bottom: 18px;
+    padding: 5px 10px;
+  }
+}
+
