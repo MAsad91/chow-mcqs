@@ -8,37 +8,57 @@ interface MCQQuestionProps {
   question: Question;
   currentIndex: number;
   totalQuestions: number;
-  onAnswerSelect: (isCorrect: boolean) => void;
+  score?: number;
+  totalAnswered?: number;
+  initialSelectedAnswer?: number;
+  isAnswered?: boolean;
+  onAnswerSelect: (selectedOptionIndex: number, isCorrect: boolean) => void;
 }
 
-export default function MCQQuestion({ question, currentIndex, totalQuestions, onAnswerSelect }: MCQQuestionProps) {
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+export default function MCQQuestion({ question, currentIndex, totalQuestions, score = 0, totalAnswered = 0, initialSelectedAnswer, isAnswered, onAnswerSelect }: MCQQuestionProps) {
+  const [selectedOption, setSelectedOption] = useState<number | null>(initialSelectedAnswer ?? null);
+  const [showFeedback, setShowFeedback] = useState(isAnswered ?? false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(
+    isAnswered && initialSelectedAnswer !== undefined 
+      ? initialSelectedAnswer === question.correctAnswer 
+      : null
+  );
 
-  // Reset state when question changes
+  // Update state when question changes or when initial values are provided
   useEffect(() => {
-    setSelectedOption(null);
-    setShowFeedback(false);
-    setIsCorrect(null);
-  }, [question.id]);
+    if (initialSelectedAnswer !== undefined && isAnswered) {
+      setSelectedOption(initialSelectedAnswer);
+      setShowFeedback(true);
+      setIsCorrect(initialSelectedAnswer === question.correctAnswer);
+    } else {
+      setSelectedOption(null);
+      setShowFeedback(false);
+      setIsCorrect(null);
+    }
+  }, [question.id, initialSelectedAnswer, isAnswered]);
 
   const handleOptionClick = (optionIndex: number) => {
-    if (showFeedback) return; // Prevent changing answer after feedback is shown
+    if (showFeedback && isAnswered) return; // Prevent changing answer after feedback is shown
 
     setSelectedOption(optionIndex);
     const correct = optionIndex === question.correctAnswer;
     setIsCorrect(correct);
     setShowFeedback(true);
-    onAnswerSelect(correct);
+    onAnswerSelect(optionIndex, correct);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.questionCard}>
-        <h2 className={styles.questionNumber}>
-          Question {currentIndex + 1} of {totalQuestions}
-        </h2>
+        <div className={styles.questionHeader}>
+          <h2 className={styles.questionNumber}>
+            Question {currentIndex + 1} of {totalQuestions}
+          </h2>
+          <div className={styles.mobileScore}>
+            <span className={styles.mobileScoreLabel}>Score</span>
+            <span className={styles.mobileScoreValue}>{score}/{totalAnswered || 0}</span>
+          </div>
+        </div>
         <p className={styles.questionText}>{question.question}</p>
         
         <div className={styles.optionsContainer}>
@@ -64,7 +84,7 @@ export default function MCQQuestion({ question, currentIndex, totalQuestions, on
                 key={index}
                 className={optionClass}
                 onClick={() => handleOptionClick(index)}
-                disabled={showFeedback}
+                disabled={showFeedback && isAnswered}
               >
                 <span className={styles.optionLabel}>
                   {String.fromCharCode(65 + index)}. {/* A, B, C, D */}
